@@ -7,8 +7,7 @@ import os
 app = Flask(__name__)
 
 # Configure MongoDB settings
-app.config["MONGO_URI"] = os.environ.get(
-    'MONGO_URI', 'mongodb+srv://sergeiganz:Franklin1948@soccergame.jam2il0.mongodb.net/soccergame?retryWrites=true&w=majority')
+app.config["MONGO_URI"] = os.environ.get('MONGO_URI')
 
 # Initialize PyMongo
 mongo = PyMongo(app)
