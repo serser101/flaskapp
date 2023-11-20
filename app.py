@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 # Configure MongoDB settings
 app.config["MONGO_URI"] = os.environ.get(
-    'MONGO_URI', 'mongodb+srv://sergeiganz:Franklin1948!@soccergame.jam2il0.mongodb.net/?retryWrites=true&w=majority')
+    'MONGO_URI', 'mongodb+srv://sergeiganz:Franklin1948@soccergame.jam2il0.mongodb.net/soccergame?retryWrites=true&w=majority')
 
 # Initialize PyMongo
 mongo = PyMongo(app)
@@ -29,7 +29,7 @@ def test_connection():
         return jsonify({"success": False, "error": str(e)})
 
 @app.route('/randomMatchup', methods=['GET'])
-def random_matchup():
+def randomMatchup():
     players = list(mongo.db.Players.find({}))
     if len(players) < 2:
         return jsonify({"error": "Not enough players for a matchup"}), 400
@@ -77,3 +77,4 @@ def vote():
 
 if __name__ == '__main__':
     app.run()
+
