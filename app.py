@@ -1,3 +1,19 @@
+from flask import Flask, jsonify, request
+from flask_pymongo import PyMongo
+from bson.objectid import ObjectId
+from random import sample
+import os 
+from dotenv import load_dotenv
+load_dotenv()
+
+app = Flask(__name__)
+
+# Configure MongoDB settings
+app.config["MONGO_URI"] = os.environ.get('MONGO_URI')
+
+# Initialize PyMongo
+mongo = PyMongo(app)
+
 @app.route('/randomMatchup', methods=['GET'])
 def randomMatchup():
     players = list(mongo.db.Players.find({}))
