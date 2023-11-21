@@ -30,6 +30,11 @@ def test_connection():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)})
 
+def generate_matchup_id(player_one_id, player_two_id):
+    # Sort the player IDs to ensure consistency
+    sorted_ids = sorted([str(player_one_id), str(player_two_id)])
+    return "-".join(sorted_ids)
+
 @app.route('/randomMatchup', methods=['GET'])
 def randomMatchup():
     players = list(mongo.db.Players.find({}))
@@ -38,7 +43,10 @@ def randomMatchup():
 
     # Create a new matchup with random players
     player_one, player_two = sample(players, 2)
+    matchup_id = generate_matchup_id(player_one['_id'], player_two['_id'])
+    
     new_matchup = {
+        'matchup_id': matchup_id,
         'player_one_id': ObjectId(player_one['_id']),
         'player_two_id': ObjectId(player_two['_id']),
         'votes_for_player_one': 0,
@@ -47,7 +55,7 @@ def randomMatchup():
     mongo.db.Matchups.insert_one(new_matchup)
 
     return jsonify({
-        "matchup_id": str(new_matchup['_id']),
+        "matchup_id": matchup_id,
         "player_one": {
             "id": str(player_one['_id']),
             "name": player_one['name'],
@@ -73,10 +81,12 @@ def vote():
     player_two_id = data['player_two_id']
     voted_for_player_one = data['voted_for_player_one']
 
+    # Generate the matchup ID from player IDs
+    matchup_id = generate_matchup_id(player_one_id, player_two_id)
+
     # Find the matchup and update vote counts
     matchup_query = {
-        'player_one_id': ObjectId(player_one_id),
-        'player_two_id': ObjectId(player_two_id)
+        'matchup_id': matchup_id
     }
     matchup = mongo.db.Matchups.find_one(matchup_query)
     if matchup:
